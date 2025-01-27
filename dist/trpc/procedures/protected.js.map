@@ -1,0 +1,1 @@
+{"version":3,"file":"protected.js","sourceRoot":"","sources":["../../../src/trpc/procedures/protected.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,IAAI,EAAE,MAAM,YAAY,CAAC;AAClC,OAAO,EAAE,eAAe,EAAE,MAAM,oCAAoC,CAAC;AAErE,MAAM,CAAC,MAAM,kBAAkB,GAAG,IAAI,CAAC,SAAS,CAAC,GAAG,CAAC,eAAe,CAAC,IAAI,CAAC,CAAC,CAAC"}

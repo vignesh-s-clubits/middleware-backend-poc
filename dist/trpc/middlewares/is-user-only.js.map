@@ -1,0 +1,1 @@
+{"version":3,"file":"is-user-only.js","sourceRoot":"","sources":["../../../src/trpc/middlewares/is-user-only.ts"],"names":[],"mappings":"AAEA,MAAM,CAAC,MAAM,UAAU,GAAG,CAAC,IAAU,EAAE,EAAE,CACvC,IAAI,CAAC,UAAU,CAAC,CAAC,IAAI,EAAE,EAAE;IAOvB,OAAO,IAAI,CAAC,IAAI,CAAC;QACf,GAAG,EAAE;YACH,IAAI,EAAE,MAAM;SACb;KACF,CAAC,CAAC;AACL,CAAC,CAAC,CAAC"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../../src/trpc/routes/auth/index.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,IAAI,EAAE,MAAM,eAAe,CAAC;AACrC,OAAO,EAAE,MAAM,EAAE,MAAM,cAAc,CAAC;AACtC,OAAO,EAAE,OAAO,EAAE,MAAM,eAAe,CAAC;AAExC,MAAM,CAAC,MAAM,UAAU,GAAG,IAAI,CAAC,MAAM,CAAC;IACpC,MAAM;IACN,OAAO;CACR,CAAC,CAAC"}

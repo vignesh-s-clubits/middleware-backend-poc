@@ -1,0 +1,12 @@
+dist
+generated
+.husky
+
+pnpm-lock.yaml
+
+.prettierignore
+
+.env*
+schema.prisma
+
+.gitignore

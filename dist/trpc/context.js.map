@@ -1,0 +1,1 @@
+{"version":3,"file":"context.js","sourceRoot":"","sources":["../../src/trpc/context.ts"],"names":[],"mappings":"AAEA,MAAM,CAAC,MAAM,aAAa,GAAG,CAAC,EAAE,GAAG,EAAE,GAAG,EAA+B,EAAE,EAAE;IACzE,OAAO;QACL,GAAG;QACH,GAAG;QACH,IAAI,EAAE,GAAG,CAAC,IAAI;KAGf,CAAC;AACJ,CAAC,CAAC"}

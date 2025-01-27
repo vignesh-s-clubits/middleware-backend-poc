@@ -1,0 +1,661 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator zod {
+  provider                         = "zod-prisma-types"
+  output                           = "../src/generated"
+  createPartialTypes               = "true"
+  createOptionalDefaultValuesTypes = "true"
+  addIncludeType                   = "false"
+  addInputTypeValidation           = "false"
+  createInputTypes                 = "false"
+  useMultipleFiles                 = "true"
+}
+
+datasource db {
+  provider          = "sqlserver"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model Contact {
+  organization      Int
+  employeeCode      String    @db.VarChar(30)
+  primaryAddress    String?   @db.VarChar(15)
+  effectiveDateFrom DateTime  @db.DateTime
+  effectiveDateTo   DateTime? @db.DateTime
+
+  address1 String? @db.VarChar(50)
+  address2 String? @db.VarChar(50)
+  address3 String? @db.VarChar(50)
+
+  contactTypeCode String         @db.VarChar(15)
+  countryCode     String?        @db.VarChar(15)
+  stateCode       String?        @db.VarChar(15)
+  cityCode        String?        @db.VarChar(15)
+  zip             Int?
+  phoneNumber1    String?
+  phoneNumber2    String?
+  mobileNumber    Int?
+  email           String?        @db.VarChar(75)
+  createdBy       String?        @db.VarChar(30)
+  createdDate     DateTime?      @db.DateTime
+  modifiedBy      String?        @db.VarChar(30)
+  modifiedDate    DateTime?      @db.DateTime
+  employeeMaster  EmployeeMaster @relation(fields: [organization, employeeCode], references: [organization, employeeCode], onUpdate: NoAction)
+
+  @@id([organization, employeeCode, contactTypeCode, effectiveDateFrom])
+}
+
+model EmployeeAssignmentDetail {
+  organization                Int
+  employeeCode                String    @db.VarChar(30)
+  assignmentOrganisationUnit  Int
+  assignmentEffectiveFromDate DateTime  @db.DateTime
+  assignmentEffectiveToDate   DateTime? @db.DateTime
+
+  assignmentChangeReasonCode    String? @db.VarChar(15)
+  employeeStatusCode            String? @db.VarChar(15)
+  designationCode               String? @db.VarChar(15)
+  locationCode                  String? @db.VarChar(15)
+  departmentCode                String? @db.VarChar(15)
+  gradeSetCode                  String? @db.VarChar(15)
+  gradeCode                     String? @db.VarChar(15)
+  assignmentAuthorizeStatusCode String? @db.VarChar(15)
+
+  jobStandardHours        Float?
+  superiorEmployeeCode    String?        @db.VarChar(30)
+  assignmentAuthorizeDate DateTime?      @db.DateTime
+  createdBy               String?        @db.VarChar(30)
+  createdDate             DateTime?      @db.DateTime
+  modifiedBy              String?        @db.VarChar(30)
+  modifiedDate            DateTime?      @db.DateTime
+  employeeMaster          EmployeeMaster @relation(fields: [organization, employeeCode], references: [organization, employeeCode], onUpdate: NoAction)
+
+  @@id([organization, employeeCode, assignmentOrganisationUnit, assignmentEffectiveFromDate])
+}
+
+model EmployeeMaster {
+  organization Int
+
+  employeeCode              String                     @db.VarChar(30)
+  employmentTypeCode        String?                    @db.VarChar(15)
+  employmentStartDate       DateTime?                  @db.DateTime
+  employmentStatusCode      String?                    @db.VarChar(15)
+  dateOfBirth               DateTime?                  @db.DateTime
+  bloodGroupCode            String?                    @db.VarChar(15)
+  imageUrl                  String?
+  createdBy                 String                     @db.VarChar(30)
+  createdDate               DateTime?                  @db.DateTime
+  modifiedBy                String                     @db.VarChar(30)
+  modifiedDate              DateTime?                  @db.DateTime
+  contact                   Contact[]
+  employeeAssignmentDetails EmployeeAssignmentDetail[]
+  familyMemberHistory       FamilyMemberHistory[]
+  identification            Identification[]
+  personalHistory           PersonalHistory[]
+  workExperience            WorkExperience[]
+
+  @@id([organization, employeeCode])
+}
+
+model FamilyMemberHistory {
+  organization Int
+  employeeCode String @db.VarChar(30)
+
+  familyMemberId        Int
+  firstName             String?   @db.VarChar(30)
+  dateOfBirth           DateTime? @db.DateTime
+  effectiveFromDate     DateTime  @db.DateTime
+  effectiveToDate       DateTime? @db.DateTime
+  middleName            String?   @db.VarChar(30)
+  lastName              String?   @db.VarChar(30)
+  relationshipStartDate DateTime? @db.DateTime
+
+  relationshipCode  String? @db.VarChar(15)
+  genderCode        String? @db.VarChar(15)
+  dependentFlagCode String? @db.VarChar(15)
+  maritalStatusCode String? @db.VarChar(15)
+
+  createdBy      String?        @db.VarChar(30)
+  createdDate    DateTime?      @db.DateTime
+  modifiedBy     String?        @db.VarChar(30)
+  modifiedDate   DateTime?      @db.DateTime
+  employeeMaster EmployeeMaster @relation(fields: [organization, employeeCode], references: [organization, employeeCode], onUpdate: NoAction)
+
+  @@id([organization, employeeCode, familyMemberId, effectiveFromDate])
+}
+
+model Identification {
+  organization Int
+  employeeCode String @db.VarChar(30)
+
+  identificationTypeCode String @db.VarChar(15)
+
+  attachmentDocument String?
+
+  documentNumber String         @db.VarChar(100)
+  validFromDate  DateTime       @db.DateTime
+  validTillDate  DateTime?      @db.DateTime
+  createdBy      String?        @db.VarChar(30)
+  createdDate    DateTime?      @db.DateTime
+  modifiedBy     String?        @db.VarChar(30)
+  modifiedDate   DateTime?      @db.DateTime
+  employeeMaster EmployeeMaster @relation(fields: [organization, employeeCode], references: [organization, employeeCode], onUpdate: NoAction)
+
+  @@id([organization, employeeCode, identificationTypeCode, documentNumber, validFromDate])
+}
+
+model PersonalHistory {
+  organization      Int
+  employeeCode      String    @db.VarChar(30)
+  effectiveFromDate DateTime  @db.DateTime
+  effectiveToDate   DateTime? @db.DateTime
+  firstName         String?   @db.VarChar(30)
+  middleName        String?   @db.VarChar(30)
+  lastName          String?   @db.VarChar(30)
+  knownAs           String?   @db.VarChar(100)
+  legalName         String?   @db.VarChar(100)
+  confirmationDate  DateTime? @db.DateTime
+
+  titleCode                  String?        @db.VarChar(15)
+  genderCode                 String?        @db.VarChar(15)
+  maritalStatusCode          String?        @db.VarChar(15)
+  nationalityCode            String?        @db.VarChar(15)
+  religionCode               String?        @db.VarChar(15)
+  stateCode                  String?        @db.VarChar(15)
+  emergencyContactName1      String?        @db.VarChar(100)
+  emergencyRelationshipCode1 String?        @db.VarChar(15)
+  emergencyPhoneNumber1      String?
+  createdBy                  String?        @db.VarChar(30)
+  createdDate                DateTime?      @db.DateTime
+  modifiedBy                 String?        @db.VarChar(30)
+  modifiedDate               DateTime?      @db.DateTime
+  employeeMaster             EmployeeMaster @relation(fields: [organization, employeeCode], references: [organization, employeeCode], onUpdate: NoAction)
+
+  @@id([organization, employeeCode, effectiveFromDate])
+}
+
+model WorkExperience {
+  organization            Int
+  employeeCode            String    @db.VarChar(30)
+  WorkExperienceId        String    @db.VarChar(15)
+  organisationDescription String?   @db.VarChar(100)
+  fromDate                DateTime? @db.DateTime
+  endDate                 DateTime? @db.DateTime
+  grossAnnualIncome       Decimal?  @db.Decimal(18, 3)
+
+  changeReason String? @db.VarChar(255)
+
+  industryTypeCode   String? @db.VarChar(15)
+  currencyCode       String? @db.VarChar(15)
+  employmentTypeCode String? @db.VarChar(15)
+
+  address String? @db.VarChar(50)
+
+  phone String?
+
+  attachmentDocument String?
+
+  jobResponsibility String?        @db.VarChar(100)
+  createdBy         String?        @db.VarChar(30)
+  createdDate       DateTime?      @db.DateTime
+  modifiedBy        String?        @db.VarChar(30)
+  modifiedDate      DateTime?      @db.DateTime
+  designation       String?        @db.VarChar(100)
+  lastMonthSalary   Decimal?       @db.Decimal(18, 3)
+  employeeMaster    EmployeeMaster @relation(fields: [organization, employeeCode], references: [organization, employeeCode], onUpdate: NoAction)
+
+  @@id([organization, employeeCode, WorkExperienceId])
+}
+
+model leaveBreakUp {
+  organization      Int
+  employeeCode      String      @db.VarChar(30)
+  leaveApplnNumber  Int
+  leaveDate         DateTime    @db.DateTime
+  regularizeStatus  String?     @db.VarChar(1)
+  leaveTypeCode     String?     @db.VarChar(5)
+  requestUnitInDays Decimal?    @db.Decimal(18, 3)
+  leaveApplnStatus  String?     @db.VarChar(5)
+  createdBy         String?     @db.VarChar(30)
+  createdDate       DateTime?   @db.DateTime
+  modifiedBy        String?     @db.VarChar(30)
+  modifiedDate      DateTime?   @db.DateTime
+  LeaveHeader       LeaveHeader @relation(fields: [organization, employeeCode, leaveApplnNumber], references: [organization, employeeCode, leaveApplnNumber], onUpdate: NoAction)
+
+  @@id([organization, employeeCode, leaveApplnNumber, leaveDate])
+}
+
+model LeaveHeader {
+  organization         Int
+  employeeCode         String         @db.VarChar(30)
+  leaveApplnNumber     Int
+  leavetypeCode        String?        @db.VarChar(5)
+  leaveRequestDate     DateTime?      @db.DateTime
+  leaveFromDate        DateTime?      @db.DateTime
+  leaveToDate          DateTime?      @db.DateTime
+  leaveFromSession     String?        @db.VarChar(5)
+  leaveToSession       String?        @db.VarChar(5)
+  leaveAuthUnit        Decimal?       @db.Decimal(18, 3)
+  leaveAuthUom         String?        @db.VarChar(5)
+  coveringEmployeeCode String?        @db.VarChar(30)
+  supportDocFlag       String?        @db.VarChar(1)
+  leaveApplnStatus     String?        @db.VarChar(5)
+  leaveReason          String?        @db.VarChar(100)
+  rejectReason         String?        @db.VarChar(100)
+  supportingDocuments1 String?        @db.VarChar(100)
+  createdBy            String?        @db.VarChar(30)
+  createdDate          DateTime?      @db.DateTime
+  modifiedBy           String?        @db.VarChar(30)
+  modifiedDate         DateTime?      @db.DateTime
+  lvsalFlag            String?        @db.VarChar(1)
+  leaveBreakup         leaveBreakUp[]
+
+  @@id([organization, employeeCode, leaveApplnNumber])
+}
+
+model leaveTypeMaster {
+  organization           Int
+  leaveTypeCode          String    @db.VarChar(5)
+  effectiveFromDate      DateTime  @db.DateTime
+  effectiveToDate        DateTime? @db.DateTime
+  leaveTypeUom           String?   @db.VarChar(5)
+  calendarBasedFlag      String?   @db.VarChar(1)
+  holidayInclusiveFlag   String?   @db.VarChar(1)
+  withoutEntitlementFlag String?   @db.VarChar(1)
+  entitlementCode        String?   @db.VarChar(5)
+  entitlementUnits       Decimal?  @db.Decimal(18, 3)
+  entitlementRule        String?   @db.VarChar(100)
+  postingCode            String?   @db.VarChar(5)
+  postingMaxUnits        Decimal?  @db.Decimal(18, 3)
+  postingMinUnits        Decimal?  @db.Decimal(18, 3)
+  postingRule            String?   @db.VarChar(100)
+  carryOverFlag          String?   @db.VarChar(1)
+  carryOverUnits         Decimal?  @db.Decimal(18, 3)
+  negativeBalanceFlag    String?   @db.VarChar(1)
+  maxBalanceUnits        Decimal?  @db.Decimal(18, 3)
+  encashFlag             String?   @db.VarChar(1)
+  encashCode             String?   @db.VarChar(5)
+  maxEncashUnits         Decimal?  @db.Decimal(18, 3)
+  supportingDocsFlag     String?   @db.VarChar(1)
+  minSrvUom              String?   @db.VarChar(5)
+  confMandFlag           String?   @db.VarChar(5)
+  perYearUnits           Int?
+  perServiceUnits        Int?
+  maxUnitsPerYear        Decimal?  @db.Decimal(18, 3)
+  maxUnitsPerSrv         Decimal?  @db.Decimal(18, 3)
+  minSrvUnits            Int?
+  createdBy              String?   @db.VarChar(30)
+  createdDate            DateTime? @db.DateTime
+  modifiedBy             String?   @db.VarChar(30)
+  modifiedDate           DateTime? @db.DateTime
+
+  @@id([organization, leaveTypeCode, effectiveFromDate])
+}
+
+model LproEmployeeAccuralDetails {
+  organization     Int
+  empCode          String    @db.VarChar(30)
+  leaveTypeCode    String    @db.VarChar(5)
+  processDate      DateTime  @db.DateTime
+  leaveTypeUom     String?   @db.VarChar(5)
+  entitleUnits     Decimal?  @db.Decimal(18, 3)
+  createdBy        String?   @db.VarChar(30)
+  createdDate      DateTime? @db.DateTime
+  modifiedBy       String?   @db.VarChar(30)
+  modifiedDate     DateTime? @db.DateTime
+  periodFrom       DateTime  @db.DateTime
+  periodTo         DateTime? @db.DateTime
+  recomputeFlag    String?   @db.VarChar(1)
+  eligibilityUnits Decimal?  @db.Decimal(18, 3)
+
+  @@id([organization, empCode, leaveTypeCode, processDate, periodFrom])
+}
+
+model LvadjEmployeeHistory {
+  organization      Int
+  employeeCode      String    @db.VarChar(30)
+  leaveTypeCode     String    @db.VarChar(5)
+  startDate         DateTime  @db.DateTime
+  adjDate           DateTime  @db.DateTime
+  availdDdjDiff     Decimal?  @db.Decimal(18, 3)
+  entitleDdjDiff    Decimal?  @db.Decimal(18, 3)
+  caryovrAdjDiff    Decimal?  @db.Decimal(18, 3)
+  encashAdjDiff     Decimal?  @db.Decimal(18, 3)
+  availAdjRemarks   String?   @db.VarChar(100)
+  entitleAdjRemarks String?   @db.VarChar(100)
+  caryovrAdjRemarks String?   @db.VarChar(100)
+  encashAdjRemarks  String?   @db.VarChar(100)
+  adjUserCode       String?   @db.VarChar(30)
+  createdBy         String?   @db.VarChar(30)
+  createdDate       DateTime? @db.DateTime
+  modifiedBy        String?   @db.VarChar(30)
+  modifiedDate      DateTime? @db.DateTime
+
+  @@id([organization, employeeCode, leaveTypeCode, startDate, adjDate])
+}
+
+model LventEmployeeDetails {
+  organization        Int
+  employeeCode        String    @db.VarChar(30)
+  leaveTypeCode       String    @db.VarChar(5)
+  startDate           DateTime  @db.DateTime
+  endDate             DateTime? @db.DateTime
+  leavetypeUom        String?   @db.VarChar(5)
+  entitleUnits        Decimal?  @db.Decimal(18, 3)
+  authrzdCaryovrUnits Decimal?  @db.Decimal(18, 3)
+  processDate         DateTime? @db.DateTime
+  createdBy           String?   @db.VarChar(30)
+  createdDate         DateTime? @db.DateTime
+  modifiedBy          String?   @db.VarChar(30)
+  modifiedDate        DateTime? @db.DateTime
+
+  @@id([organization, employeeCode, leaveTypeCode, startDate])
+}
+
+model organizationMaster {
+  organization         Int       @id(map: "pk_org_mst")
+  OrganizationName     String?   @db.VarChar(100)
+  organizationAddress1 String?   @db.VarChar(100)
+  organizationAddress2 String?   @db.VarChar(100)
+  city                 String?   @db.VarChar(100)
+  state                String?   @db.VarChar(100)
+  country              String?   @db.VarChar(100)
+  createdBy            String?   @db.VarChar(30)
+  createdDate          DateTime? @db.DateTime
+  modifiedBy           String?   @db.VarChar(30)
+  modifiedDate         DateTime? @db.DateTime
+}
+
+model PAY_PPRD {
+  organization  Int
+  pprdCd        String    @db.VarChar(5)
+  pprdDesc      String?   @db.VarChar(100)
+  pprdAliasname String?   @db.VarChar(100)
+  pprdFromDate  DateTime? @db.DateTime
+  pprdToDate    DateTime? @db.DateTime
+  createdBy     String?   @db.VarChar(30)
+  createdDate   DateTime? @db.DateTime
+  modifiedBy    String?   @db.VarChar(30)
+  modifiedDate  DateTime? @db.DateTime
+
+  @@id([organization, pprdCd])
+}
+
+model PaymentBankDetails {
+  organization      Int
+  employeeCode      String    @db.VarChar(30)
+  bankCode          String    @db.VarChar(5)
+  AccountNo         String    @db.VarChar(100)
+  IBAN              String    @db.VarChar(100)
+  effectiveFromDate DateTime  @db.DateTime
+  effectiveToDate   DateTime? @db.DateTime
+  createdBy         String?   @db.VarChar(30)
+  createdDate       DateTime? @db.DateTime
+  modifiedBy        String?   @db.VarChar(30)
+  modifiedDate      DateTime? @db.DateTime
+
+  @@id([organization, employeeCode, effectiveFromDate])
+}
+
+model PaymentBankHdr {
+  organization Int
+  bank         String    @db.VarChar(5)
+  bankName     String    @db.VarChar(100)
+  branch       String?   @db.VarChar(100)
+  createdBy    String?   @db.VarChar(30)
+  createdDate  DateTime? @db.DateTime
+  modifiedBy   String?   @db.VarChar(30)
+  modifiedDate DateTime? @db.DateTime
+
+  @@id([organization, bank])
+}
+
+model PY_EMP_AUTH {
+  organization Int
+  employeeCode String    @db.VarChar(30)
+  period       String    @db.VarChar(100)
+  payCode      String    @db.VarChar(100)
+  amount       Decimal?  @db.Decimal(18, 3)
+  createdby    String?   @db.VarChar(30)
+  createdDate  DateTime? @db.DateTime
+  modifiedBy   String?   @db.VarChar(30)
+  modifiedDate DateTime? @db.DateTime
+
+  @@id([organization, employeeCode, period])
+}
+
+model PY_PAY_ELEMENT_DTL {
+  organization Int
+  payCode      String    @db.VarChar(5)
+  payDesc      String    @db.VarChar(100)
+  pyClassi     String?   @db.VarChar(5)
+  createdBy    String?   @db.VarChar(30)
+  createdDate  DateTime? @db.DateTime
+  modifiedBy   String?   @db.VarChar(30)
+  modifiedDate DateTime? @db.DateTime
+
+  @@id([organization, payCode])
+}
+
+model TimeSheetEmployeeAttendence {
+  employeeCode      String    @db.VarChar(30)
+  timeSheetDate     DateTime  @db.DateTime
+  timeSheetFromDate DateTime? @db.DateTime
+  timeSheetToDate   DateTime? @db.DateTime
+  shift             String?   @db.VarChar(5)
+  actualWorkHours   Int?
+  regularHours      Int?
+  lateHours         Int?
+  earlyHours        Int?
+  absentHours       Int?
+  otHours           Decimal?  @db.Decimal(18, 3)
+  typeOfDuty        String?   @db.VarChar(5)
+  exceptionStatus   String?   @db.VarChar(5)
+  timesheetStatus   String?   @db.VarChar(5)
+  createdBy         String?   @db.VarChar(30)
+  createdDate       DateTime? @db.DateTime
+  modifiedBy        String?   @db.VarChar(30)
+  modifiedDate      DateTime? @db.DateTime
+
+  @@id([employeeCode, timeSheetDate])
+}
+
+model TimeSheetEmployee_Gre_Cal {
+  organization      Int
+  employeeCode      String    @db.VarChar(30)
+  rotaScheduleCode  String    @db.VarChar(5)
+  scheduleDate      DateTime  @db.DateTime
+  originalShiftCode String?   @db.VarChar(5)
+  shiftCode         String?   @db.VarChar(5)
+  holidayQc         String?   @db.VarChar(5)
+  shiftdevnQc       String?   @db.VarChar(5)
+  weeklyOffQc       String?   @db.VarChar(5)
+  offDayQc          String?   @db.VarChar(5)
+  deviationReason   String?   @db.VarChar(100)
+  createdBy         String?   @db.VarChar(30)
+  createdDate       DateTime? @db.DateTime
+  modifiedBy        String?   @db.VarChar(30)
+  modifiedDate      DateTime? @db.DateTime
+
+  @@id([organization, employeeCode, scheduleDate])
+}
+
+model TmHolidayMaster {
+  organization      Int
+  holidayMasterCode String    @db.VarChar(5)
+  holidayDate       DateTime  @db.DateTime
+  holidayDateDesc   String?   @db.VarChar(100)
+  createdBy         String?   @db.VarChar(30)
+  createdDate       DateTime? @db.DateTime
+  modifiedBy        String?   @db.VarChar(30)
+  modifiedDate      DateTime? @db.DateTime
+
+  @@id([organization, holidayMasterCode, holidayDate])
+}
+
+model TmRotationScheduleGreCalendar {
+  organization         Int
+  rotationScheduleCode String    @db.VarChar(5)
+  shiftCode            String    @db.VarChar(5)
+  scheduleDate         DateTime  @db.DateTime
+  holidayFlag          String?   @db.VarChar(5)
+  offdayFlag           String?   @db.VarChar(5)
+  weekoffFlag          String?   @db.VarChar(5)
+  createdBy            String?   @db.VarChar(30)
+  createdDate          DateTime? @db.DateTime
+  modifiedBy           String?   @db.VarChar(30)
+  modifiedDate         DateTime? @db.DateTime
+
+  @@id([organization, rotationScheduleCode, scheduleDate])
+}
+
+model TmShiftDetails {
+  organization   Int
+  shiftCode      String    @db.VarChar(5)
+  fromTime       DateTime  @db.Time
+  toTime         DateTime? @db.Time
+  sequenceNo     Int?
+  shiftSessionQc String?   @db.VarChar(5)
+  breakType      String?   @db.VarChar(5)
+  createdBy      String?   @db.VarChar(30)
+  createdDate    DateTime? @db.DateTime
+  modifiedBy     String?   @db.VarChar(30)
+  modifiedDate   DateTime? @db.DateTime
+
+  @@id([organization, shiftCode, fromTime])
+}
+
+model TmShiftHdr {
+  organization        Int
+  shiftCode           String    @db.VarChar(5)
+  shiftStartTime      DateTime? @db.Time
+  shiftEndTime        DateTime? @db.Time
+  shiftCategory       String?   @db.VarChar(5)
+  shiftToleranceLimit Int?
+  mapFlexiShift       String?   @db.VarChar(1)
+  mandatoryWorkHours  Decimal?  @db.Decimal(18, 2)
+  totalBreakTimeHours Decimal?  @db.Decimal(9, 2)
+  createdBy           String?   @db.VarChar(30)
+  createdDate         DateTime? @db.DateTime
+  modifiedBy          String?   @db.VarChar(30)
+  modifiedDate        DateTime? @db.DateTime
+
+  @@id([organization, shiftCode])
+}
+
+model CityMaster {
+  organization Int
+  countryCode  String    @db.VarChar(5)
+  stateCode    String    @db.VarChar(5)
+  cityCode     String    @db.VarChar(5)
+  cityDesc     String    @db.VarChar(75)
+  languageId   Int
+  createdBy    String    @db.VarChar(30)
+  createdDate  DateTime? @db.DateTime
+  modifiedBy   String?   @db.VarChar(30)
+  modifiedDate DateTime? @db.DateTime
+
+  @@id([cityCode, languageId])
+}
+
+model DeptMaster {
+  organization Int
+  deptCode     String    @db.VarChar(5)
+  deptDesc     String?   @db.VarChar(75)
+  languageId   Int
+  activeFlag   String?   @db.VarChar(5)
+  deptHod      String?   @db.VarChar(5)
+  createdBy    String    @db.VarChar(30)
+  createdDate  DateTime? @db.DateTime
+  modifiedBy   String?   @db.VarChar(30)
+  modifiedDate DateTime? @db.DateTime
+
+  @@id([deptCode, languageId])
+}
+
+model GradeMaster {
+  organization Int
+  gradeCode    String    @id(map: "ct_grade_cd") @db.VarChar(5)
+  gradeDesc    String?   @db.VarChar(75)
+  createdBy    String    @db.VarChar(30)
+  createdDate  DateTime? @db.DateTime
+  modifiedBy   String?   @db.VarChar(30)
+  modifiedDate DateTime? @db.DateTime
+}
+
+model NationalityMaster {
+  organization Int
+  countryCode  String    @db.VarChar(5)
+  countryDesc  String?   @db.VarChar(75)
+  languageId   Int
+  createdBy    String    @db.VarChar(30)
+  createdDate  DateTime? @db.DateTime
+  modifiedBy   String?   @db.VarChar(30)
+  modifiedDate DateTime? @db.DateTime
+
+  @@id([countryCode, languageId])
+}
+
+model StateMaster {
+  organization Int
+  countryCode  String?   @db.VarChar(5)
+  stateCode    String    @db.VarChar(5)
+  stateDesc    String?   @db.VarChar(75)
+  languageId   Int
+  createdBy    String    @db.VarChar(30)
+  createdDate  DateTime? @db.DateTime
+  modifiedBy   String?   @db.VarChar(30)
+  modifiedDate DateTime? @db.DateTime
+
+  @@id([stateCode, languageId])
+}
+
+model LanguageMaster {
+  languageId   Int       @id(map: "ct_language_master")
+  languageDesc String?   @db.VarChar(75)
+  createBy     String    @db.VarChar(30)
+  createdDate  DateTime? @db.DateTime
+  modifiedBy   String?   @db.VarChar(30)
+  modifiedDate DateTime? @db.DateTime
+}
+
+model LocationMaster {
+  organization Int
+  locationCode String    @id(map: "PK__location__24103CEEC720EC10") @db.VarChar(5)
+  locationDesc String?   @db.VarChar(75)
+  languageId   Int
+  createdBy    String    @db.VarChar(30)
+  createdDate  DateTime? @db.DateTime
+  modifiedBy   String?   @db.VarChar(30)
+  modifiedDate DateTime? @db.DateTime
+}
+
+model PositionMaster {
+  organization Int
+  positionCode String    @db.VarChar(5)
+  positionDesc String?   @db.VarChar(75)
+  activeFlag   String?   @db.VarChar(5)
+  languageId   Int
+  createdBy    String    @db.VarChar(30)
+  createdDate  DateTime? @db.DateTime
+  modifiedBy   String?   @db.VarChar(30)
+  modifiedDate DateTime? @db.DateTime
+
+  @@id([positionCode, languageId])
+}
+
+model Masters {
+  organization Int
+  code         String    @db.VarChar(5)
+  description  String    @db.VarChar(75)
+  masterTable  String    @db.VarChar(30)
+  createdBy    String    @db.VarChar(30)
+  createdDate  DateTime? @db.DateTime
+  modifiedBy   String?   @db.VarChar(30)
+  modifiedDate DateTime? @db.DateTime
+
+  @@id([organization, code, masterTable])
+}

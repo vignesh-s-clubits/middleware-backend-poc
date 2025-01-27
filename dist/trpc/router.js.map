@@ -1,0 +1,1 @@
+{"version":3,"file":"router.js","sourceRoot":"","sources":["../../src/trpc/router.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,IAAI,EAAE,MAAM,WAAW,CAAC;AACjC,OAAO,EAAE,UAAU,EAAE,MAAM,wBAAwB,CAAC;AAEpD,MAAM,CAAC,MAAM,SAAS,GAAG,IAAI,CAAC,MAAM,CAAC;IACnC,IAAI,EAAE,UAAU;CACjB,CAAC,CAAC"}

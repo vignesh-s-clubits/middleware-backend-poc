@@ -1,0 +1,21 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+generator zod {
+  provider                         = "zod-prisma-types"
+  output                           = "../src/generated"
+  createPartialTypes               = "true"
+  addInputTypeValidation           = "false"
+  useMultipleFiles                 = "true"
+  createInputTypes                 = "false"
+  createOptionalDefaultValuesTypes = "true"
+  addIncludeType                   = "false"
+}
+
+datasource db {
+  provider          = "sqlserver"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
